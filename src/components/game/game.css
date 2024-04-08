@@ -53,9 +53,18 @@
   color: #922724;
 }
 
+.container h4 {
+  font-size: 0.5rem; /* Reduced font size for smaller screens */
+  font-weight: 100;
+  color: #181818;
+}
+
 @media (min-width: 768px) {
   .container h2 {
     font-size: 1.7rem; /* Increase font size for larger screens */
+  }
+  .container h4 {
+    font-size: 0.8rem; /* Increase font size for larger screens */
   }
 }
 
@@ -169,12 +178,32 @@
 .container .your-selection {
   display: flex;
   justify-content: center;
-  font-size: 1.2rem; /* Reduced font size for smaller screens */
+  font-weight: 500;
+  font-size: 2rem; /* Reduced font size for smaller screens */
   color: #922724;
   animation: fadeIn 1s ease;
 }
 
+.container .Result {
+  display: flex;
+  justify-content: center;
+  font-size: 1.2rem; /* Reduced font size for smaller screens */
+  color: #181818;
+  animation: fadeIn 1s ease;
+}
+
+.container .show-answer {
+  display: flex;
+  justify-content: center;
+  font-size: 1.2rem; /* Reduced font size for smaller screens */
+  color: #654321;
+  animation: fadeIn 1s ease;
+}
+
 @media (min-width: 768px) {
+  .container .your-selection {
+    font-size: 3rem; /* Increase font size for larger screens */
+  }
   .container .your-selection {
     font-size: 1.5rem; /* Increase font size for larger screens */
   }

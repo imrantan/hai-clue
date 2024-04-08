@@ -67,6 +67,12 @@ const Game = () => {
                 <strong></strong>
                 <span>{selectedLetters.join('')}</span>
             </div>
+            <div className='Result'>
+                {submittedAnswer && <p>{isCorrect ? 'Correct!' : 'Incorrect! Try again.'}</p>}
+            </div>
+            <div className='show-answer'>
+                {isCorrect && <p> Answer: {riddle.answer.toUpperCase()}</p>}
+            </div>
             <div className="letter-grid">
                 <div className="row">
                     {clickedButtons.slice(0, 5).map((button, index) => (
@@ -101,11 +107,7 @@ const Game = () => {
                 <button onClick={() => window.location.reload()}>Next</button>
                 {!isCorrect && submittedAnswer && <button onClick={resetSelection}>Try Again</button>}
             </div>
-            <div>
-                {submittedAnswer && <p>{isCorrect ? 'Correct!' : 'Incorrect! Try again.'}</p>}
-                
-                {isCorrect && <p>Answer: {riddle.answer.toUpperCase()}</p>}
-            </div>
+            <h4>by https://github.com/imrantan</h4>
         </div>
     );
 }
