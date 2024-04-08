@@ -1,156 +1,201 @@
 .container {
-    width: 640px;
-    margin: 150px auto 0;
-    background: #F5F1E8; /* Off-white background */
-    color: #654321; /* Brown text color */
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    border-radius: 10px;
-    padding: 40px 50px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-    animation: slideUp 1s ease;
-  }
+  max-width: 640px;
+  margin: 50px auto 0;
+  background: #F5F1E8;
+  color: #654321;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  animation: slideUp 1.5s ease;
+}
 
+.container h1 {
+  color: var(--main-red);
+  font-size: 2rem; /* Reduced font size for smaller screens */
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+  animation: fadeIn 1s ease;
+}
+
+@media (min-width: 768px) {
   .container h1 {
-    color: var(--main-red);
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 2;
-    animation: fadeIn 1s ease;
+    font-size: 3rem; /* Increase font size for larger screens */
   }
-  
-  .container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('../../assets/images/tatami.jpg');
-    background-size: 300px;
-    opacity: 0.2;
-    z-index: -1;
-  }
-  
-  .container hr {
-    height: 2px;
-    border: none;
-    background: #654321; /* Brown separator */
-  }
-  
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../../assets/images/tatami.jpg');
+  background-size: 300px;
+  opacity: 0.2;
+  z-index: -1;
+}
+
+.container hr {
+  height: 2px;
+  border: none;
+  background: #654321;
+}
+
+.container h2 {
+  font-size: 1.5rem; /* Reduced font size for smaller screens */
+  font-weight: 700;
+  color: #922724;
+}
+
+@media (min-width: 768px) {
   .container h2 {
-    font-size: 27px;
-    font-weight: 700;
-    color: #922724; /* Deep red heading color */
+    font-size: 1.7rem; /* Increase font size for larger screens */
   }
-  
+}
+
+.container button {
+  margin: auto;
+  width: 100px;
+  height: 65px;
+  background: #365C2E;
+  color: #F5F1E8;
+  font-size: 1.2rem; /* Reduced font size for smaller screens */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 768px) {
   .container button {
-    margin: auto;
-    width: 100px;
-    height: 65px;
-    background: #365C2E; /* Green button background */
-    color: #F5F1E8; /* Off-white button text */
-    font-size: 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 1.5rem; /* Increase font size for larger screens */
   }
-  
-  .container button:hover {
-    background-color: #922724; /* Deep red hover background */
-  }
-  
+}
+
+.container button:hover {
+  background-color: #922724;
+}
+
+.container .index {
+  margin: auto;
+  font-size: 1rem; /* Reduced font size for smaller screens */
+  color: #654321;
+}
+
+@media (min-width: 768px) {
   .container .index {
-    margin: auto;
-    font-size: 18px;
-    color: #654321; /* Brown index text color */
+    font-size: 1.2rem; /* Increase font size for larger screens */
   }
-  
-  .container .letter-grid {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .container .letter-grid .row {
-    display: flex;
-  }
-  
+}
+
+.container .letter-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.container .letter-grid .row {
+  display: flex;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  justify-content: center;
+}
+
+.container .letter-grid button {
+  margin: 5px;
+  padding: 8px 10px;
+  font-size: 1rem; /* Reduced font size for smaller screens */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #365C2E;
+  color: #F5F1E8;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 768px) {
   .container .letter-grid button {
-    margin: 5px;
-    padding: 8px 10px;
-    font-size: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #365C2E; /* Green button background */
-    color: #F5F1E8; /* Off-white button text */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 1.2rem; /* Increase font size for larger screens */
   }
-  
-  .container .letter-grid button:hover {
-    background-color: #922724; /* Deep red hover background */
-  }
-  
-  .container .letter-grid button.selected {
-    background-color: #922724; /* Deep red background for selected button */
-  }
-  
-  .controls {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-  }
-  
+}
+
+.container .letter-grid button:hover {
+  background-color: #922724;
+}
+
+.container .letter-grid button.selected {
+  background-color: #922724;
+}
+
+.controls {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+}
+
+.controls button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 1rem; /* Reduced font size for smaller screens */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #365C2E;
+  color: #F5F1E8;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 768px) {
   .controls button {
-    margin: 0 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #365C2E; /* Green button background */
-    color: #F5F1E8; /* Off-white button text */
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 1.2rem; /* Increase font size for larger screens */
   }
-  
-  .controls button:hover {
-    background-color: #922724; /* Deep red hover background */
-  }
-  
-  .controls button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
+}
+
+.controls button:hover {
+  background-color: #922724;
+}
+
+.controls button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.container .your-selection {
+  display: flex;
+  justify-content: center;
+  font-size: 1.2rem; /* Reduced font size for smaller screens */
+  color: #922724;
+  animation: fadeIn 1s ease;
+}
+
+@media (min-width: 768px) {
   .container .your-selection {
-    display: flex;
-    justify-content: center;
-    font-size: 25px;
-    color: #922724; /* Deep red color for your selection */
-    animation: fadeIn 1s ease;
+    font-size: 1.5rem; /* Increase font size for larger screens */
   }
-  
-  @keyframes slideUp {
-    0% {
-      opacity: 0;
-      transform: translateY(50px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
   }
-  
-  @keyframes fadeIn {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

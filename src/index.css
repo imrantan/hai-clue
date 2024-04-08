@@ -1,21 +1,33 @@
-*{
+* {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
-body{
-  height: 100vh;
+
+body {
+  min-height: 100vh;
   background-image: linear-gradient(#F5F1E8, #654321);
-  font-family: 'poppins';
+  font-family: 'poppins', sans-serif;
+  position: relative;
 }
+
 body::before {
   content: '';
-  position: absolute;
+  position: fixed; /* Change to fixed for better performance */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-image: url('assets/images/bamboo.jpg');
-  background-size: 300px;
+  background-repeat: repeat; /* Set background-repeat to repeat */
+  background-size: 200px; /* Adjust the size of the repeated image */
   opacity: 0.2;
   z-index: -1;
+}
+
+@media (max-width: 768px) {
+  /* Styles for smaller screens */
+  body::before {
+    background-size: 150px; /* Reduce the background image size for smaller screens */
+  }
 }
