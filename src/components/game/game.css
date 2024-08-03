@@ -10,7 +10,7 @@
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
-  animation: slideUp 1.5s ease;
+  animation: slideUp 1.8s ease;
 }
 
 .container h1 {
@@ -176,12 +176,19 @@
 }
 
 .container .your-selection {
+  height: 50px; /* Fixed height to prevent layout shift */
   display: flex;
+  align-items: center;
   justify-content: center;
-  font-weight: 500;
-  font-size: 2rem; /* Reduced font size for smaller screens */
+  font-weight: bold;
+  font-size: 1.5em; /* Increased font size */
   color: #922724;
   animation: fadeIn 1s ease;
+}
+
+.container .selected-letters {
+  font-size: 1.5em; /* Increased font size */
+  font-weight: bold;
 }
 
 .container .Result {
@@ -227,4 +234,53 @@
   100% {
     opacity: 1;
   }
+}
+
+/* Add this new animation for the transition effect */
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* Apply the new animation to the riddle */
+.container h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #922724;
+}
+
+@media (min-width: 768px) {
+  .container h2 {
+    font-size: 1.7rem;
+  }
+}
+
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s ease-in;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+.counters-solved {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  text-align: right;
+  font-size: 2.5rem;
+}
+
+.counters-skipped {
+  position: absolute;
+  top: 70px;
+  right: 10px;
+  text-align: right;
+  font-size: 1rem;
+}
+
+.counters div {
+  margin-bottom: 5px;
 }
