@@ -18,10 +18,10 @@ body::before {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('assets/images/bamboo.jpg');
+  background-image: var(--background-image);
   background-repeat: repeat; /* Set background-repeat to repeat */
   background-size: 200px; /* Adjust the size of the repeated image */
-  opacity: 0.2;
+  opacity: 0.4;
   z-index: -1;
 }
 

@@ -48,7 +48,9 @@
 }
 
 .container h2 {
-  font-size: 1.5rem; /* Reduced font size for smaller screens */
+  text-align: center;
+  margin-bottom: 10px; /* Reduce this value to decrease space */
+  font-size: 1.8rem; /* Reduced font size for smaller screens */
   font-weight: 700;
   color: #922724;
 }
@@ -61,7 +63,7 @@
 
 @media (min-width: 768px) {
   .container h2 {
-    font-size: 1.7rem; /* Increase font size for larger screens */
+    font-size: 2rem; /* Increase font size for larger screens */
   }
   .container h4 {
     font-size: 0.8rem; /* Increase font size for larger screens */
@@ -106,7 +108,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  margin-top: -10px;
 }
 
 .container .letter-grid .row {
@@ -119,6 +121,7 @@
   margin: 5px;
   padding: 8px 10px;
   font-size: 1rem; /* Reduced font size for smaller screens */
+  font-weight: bold; /* Make letters bold */
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #365C2E;
