@@ -1606,7 +1606,7 @@ export const data =[
   },
   {
       "id": 322,
-      "riddle": "Mystic warrior's light\nGuarding justice, peace supreme\nHope's last sentinel",
+      "riddle": "Mystic warrior's light\nSabre of justice supreme\nGalaxy's last hope",
       "answer": "jedi"
   },
   {
@@ -1682,7 +1682,7 @@ export const data =[
   {
       "id": 337,
       "riddle": "Crispy wafer snack\nChocolate's irresistible\nSweet indulgence calls",
-      "answer": "kit-kat"
+      "answer": "kitkat"
   },
   {
       "id": 338,

@@ -46,17 +46,6 @@ const Game = () => {
         audioNextRef.current = new Audio(nextSound);
     }, []);
 
-    // I dont want the colors to change dynamically for the title and the riddle anymore :/
-    // useEffect(() => {
-    //     if (solvedCount % 3 === 0 && solvedCount !== 0) {
-    //         setTitleColor(getRandomColor());
-    //         setRiddleColor(getRandomColor());
-    //     }
-    // }, [solvedCount]);
-
-    // const getRandomColor = () => {
-    //     return '#' + Math.floor(Math.random()*16777215).toString(16);
-    // };
 
     const handleButtonClick = (index) => {
         if (!submittedAnswer && !clickedButtons[index].clicked) {
@@ -133,7 +122,7 @@ const Game = () => {
             </div>
             <div className='Result'>
                 {submittedAnswer && <p>{isCorrect ? 'Correct!' : 'Incorrect! Try again.'}</p>}
-                {!isCorrect && incorrectAttempts > 3 && (
+                {!isCorrect && incorrectAttempts > 2 && (
                     <p>Hint: The answer has {riddle.answer.length} letters.</p>
                 )}
             </div>
@@ -178,7 +167,7 @@ const Game = () => {
                 </button>
                 {!isCorrect && submittedAnswer && <button onClick={resetSelection}>Try Again</button>}
             </div>
-            <h4>by https://github.com/imrantan</h4>
+            <h4>created by https://github.com/imrantan</h4>
         </div>
     );
 }
