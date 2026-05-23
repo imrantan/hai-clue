@@ -41,6 +41,7 @@ const Game = () => {
     const [showGameOver, setShowGameOver] = useState(false);
     const [showBadge, setShowBadge] = useState(false);
     const [showTrophy, setShowTrophy] = useState(false);
+    const [showStreakEndTrophy, setShowStreakEndTrophy] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
 
     // Award snapshot (captured at the moment the milestone is reached)
@@ -56,6 +57,8 @@ const Game = () => {
     const celebrateTimerRef = useRef(null);
     // Tracks whether buffer loading has been kicked off (must happen after ctx creation)
     const audioInitRef = useRef(false);
+    // Tracks whether the streak-end trophy was triggered by a skip (vs game over)
+    const streakEndWasSkip = useRef(false);
 
     function addLineBreaks(str) {
         return str.split('\n').map((line, i) => (
@@ -138,7 +141,7 @@ const Game = () => {
             osc.type = 'sine';
             osc.frequency.setValueAtTime(600, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.04);
-            gain.gain.setValueAtTime(0.18, ctx.currentTime);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
             osc.start(ctx.currentTime);
             osc.stop(ctx.currentTime + 0.04);
@@ -192,6 +195,8 @@ const Game = () => {
 
     const handleBackspace = () => {
         if (selectedLetters.length === 0 || submittedAnswer) return;
+        ensureAudio();
+        playClick();
         const last = selectedLetters[selectedLetters.length - 1];
         setClickedButtons(prev => {
             const updated = [...prev];
@@ -211,6 +216,7 @@ const Game = () => {
         if (correct) {
             playBuffer(correctBufferRef);
             setSolvedCount(prev => prev + 1);
+            setLives(prev => Math.min(prev + 1, 5));
             setIncorrectAttempts(0);
             setCelebrate(true);
             clearTimeout(celebrateTimerRef.current);
@@ -239,6 +245,13 @@ const Game = () => {
             const newLives = lives - 1;
             setLives(newLives);
             if (newLives === 0) {
+                if (streakCount > 10) {
+                    setAwardStreak(streakCount);
+                    setAwardLives(0);
+                    setAwardRiddle(riddle.riddle);
+                    setAwardDateTime(formatDateTime());
+                    streakEndWasSkip.current = false;
+                }
                 setShowGameOver(true);
             }
         }
@@ -254,13 +267,25 @@ const Game = () => {
     const nextRiddle = () => {
         ensureAudio();
         playBuffer(nextBufferRef);
+
+        // Intercept skip on a >10 streak — show trophy before resetting
+        if (!isCorrect && streakCount > 10) {
+            setAwardStreak(streakCount);
+            setAwardLives(lives);
+            setAwardRiddle(riddle.riddle);
+            setAwardDateTime(formatDateTime());
+            streakEndWasSkip.current = true;
+            setShowStreakEndTrophy(true);
+            return;
+        }
+
         setFadeIn(false);
         startTransition(() => {
             setTimeout(() => {
                 if (!isCorrect) {
                     setSkippedCount(prev => prev + 1);
-                    setStreakCount(0); // skipping resets streak
-                    setLives(5);      // skipping resets lives
+                    setStreakCount(0);
+                    setLives(5);
                 }
                 setRiddle(data[Math.floor(Math.random() * data.length)]);
                 resetSelection();
@@ -270,9 +295,13 @@ const Game = () => {
         });
     };
 
-    // Dismiss Game Over: reset lives + streak, load fresh riddle
+    // Dismiss Game Over: show streak-end trophy first if streak was >10, otherwise reset
     const handleGameOverDismiss = () => {
         setShowGameOver(false);
+        if (streakCount > 10) {
+            setShowStreakEndTrophy(true);
+            return;
+        }
         setLives(5);
         setStreakCount(0);
         setIncorrectAttempts(0);
@@ -284,7 +313,24 @@ const Game = () => {
         }, 300);
     };
 
-    const anyModalOpen = showGameOver || showBadge || showTrophy || showInfo;
+    // Close the streak-end trophy and perform the appropriate reset
+    const handleStreakEndTrophyClose = () => {
+        setShowStreakEndTrophy(false);
+        if (streakEndWasSkip.current) {
+            setSkippedCount(prev => prev + 1);
+        }
+        setStreakCount(0);
+        setLives(5);
+        setIncorrectAttempts(0);
+        setFadeIn(false);
+        setTimeout(() => {
+            setRiddle(data[Math.floor(Math.random() * data.length)]);
+            resetSelection();
+            setFadeIn(true);
+        }, 300);
+    };
+
+    const anyModalOpen = showGameOver || showBadge || showTrophy || showStreakEndTrophy || showInfo;
 
     // Keyboard controls — disabled while any modal is open
     useEffect(() => {
@@ -339,6 +385,16 @@ const Game = () => {
                     onClose={() => setShowTrophy(false)}
                 />
             )}
+            {showStreakEndTrophy && (
+                <AchievementModal
+                    type="trophy"
+                    streakCount={awardStreak}
+                    lives={awardLives}
+                    riddleText={awardRiddle}
+                    dateTime={awardDateTime}
+                    onClose={handleStreakEndTrophyClose}
+                />
+            )}
             {showInfo && <InfoModal onClose={() => setShowInfo(false)} />}
 
             <div className={`container ${fadeIn ? 'fade-in' : 'fade-out'} ${celebrate ? 'celebrate' : ''}`}>
@@ -385,7 +441,7 @@ const Game = () => {
                             {isCorrect ? 'Correct!' : 'Incorrect! Try again.'}
                         </p>
                     )}
-                    {!isCorrect && incorrectAttempts > 2 && (
+                    {!isCorrect && incorrectAttempts > 1 && (
                         <div className="hint-callout">
                             <p>Hint: The answer has {riddle.answer.length} letters</p>
                         </div>

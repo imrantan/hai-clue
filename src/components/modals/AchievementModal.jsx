@@ -45,6 +45,7 @@ const AchievementModal = ({ type, streakCount, lives, riddleText, dateTime, onCl
                     await navigator.share({
                         title: `Hai-Clue ${isTrophy ? 'Trophy' : 'Badge'}`,
                         text: `I got a ${streakCount} streak on Hai-Clue! Can you beat it?`,
+                        url: 'https://hai-clue.onrender.com/',
                         files: [file],
                     });
                     return;
