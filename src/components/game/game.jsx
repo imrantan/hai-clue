@@ -1,175 +1,238 @@
 import React, { useState, useEffect, useTransition, useRef } from 'react';
 import { data } from '../../assets/data.js';
 import './game.css';
-import correctSound from '../../assets/sounds/correct-6033.mp3'; // Adjust the path as needed
-import nextSound from '../../assets/sounds/sound-next.mp3'; // Adjust the path as needed
+import correctSound from '../../assets/sounds/correct-6033.mp3';
+import nextSound from '../../assets/sounds/sound-next.mp3';
 
 const Game = () => {
-    const [index, setIndex] = useState(0);
-    const [riddle, setRiddle] = useState(data[Math.floor(Math.random() * 694)]);
+    const [riddle, setRiddle] = useState(data[Math.floor(Math.random() * data.length)]);
     const [clickedButtons, setClickedButtons] = useState([]);
     const [selectedLetters, setSelectedLetters] = useState([]);
     const [submittedAnswer, setSubmittedAnswer] = useState('');
     const [isCorrect, setIsCorrect] = useState(false);
     const [solvedCount, setSolvedCount] = useState(0);
-    const [skippedCount, setSkippedCount] = useState(0);  // New state for skipped riddles
+    const [skippedCount, setSkippedCount] = useState(0);
     const [incorrectAttempts, setIncorrectAttempts] = useState(0);
     const [isPending, startTransition] = useTransition();
-    // I dont want the colors to change dynamically for the title and the riddle anymore :/
-    const [titleColor, setTitleColor] = useState('var(--main-red)');
-    const [riddleColor, setRiddleColor] = useState('#922724');
     const [fadeIn, setFadeIn] = useState(true);
+    const [isMuted, setIsMuted] = useState(false);
+    const [celebrate, setCelebrate] = useState(false);
 
-    // Intialise sounds
     const audioCorrectRef = useRef(null);
     const audioNextRef = useRef(null);
-
+    const celebrateTimerRef = useRef(null);
 
     function addLineBreaks(str) {
-        return str.split('\n').map((line, index) => {
-          return <React.Fragment key={index}>{line}<br/></React.Fragment>;
-        });
-    };
+        return str.split('\n').map((line, i) => (
+            <React.Fragment key={i}>{line}<br /></React.Fragment>
+        ));
+    }
 
     useEffect(() => {
-        const buttons = riddle.answer.split('').map((letter) => ({ letter: letter.toUpperCase(), clicked: false }));
-        const numRandomButtons = Math.max(10 - buttons.length, 0);
-        const randomLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').sort(() => Math.random() - 0.5).slice(0, numRandomButtons);
-        const randomButtons = randomLetters.map(letter => ({ letter, clicked: false }));
-        const allButtons = buttons.concat(randomButtons).sort(() => Math.random() - 0.5);
+        const buttons = riddle.answer.split('').map(letter => ({ letter: letter.toUpperCase(), clicked: false }));
+        const numRandom = Math.max(10 - buttons.length, 0);
+        const randomLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            .split('')
+            .sort(() => Math.random() - 0.5)
+            .slice(0, numRandom);
+        const allButtons = buttons
+            .concat(randomLetters.map(l => ({ letter: l, clicked: false })))
+            .sort(() => Math.random() - 0.5);
         setClickedButtons(allButtons);
     }, [riddle]);
-
 
     useEffect(() => {
         audioCorrectRef.current = new Audio(correctSound);
         audioNextRef.current = new Audio(nextSound);
+        return () => clearTimeout(celebrateTimerRef.current);
     }, []);
 
+    const playSound = (ref) => {
+        if (isMuted || !ref.current) return;
+        ref.current.currentTime = 0;
+        ref.current.play().catch(() => {});
+    };
 
     const handleButtonClick = (index) => {
         if (!submittedAnswer && !clickedButtons[index].clicked) {
-            const clickedLetter = clickedButtons[index].letter;
-            setClickedButtons(prevButtons => {
-                const updatedButtons = [...prevButtons];
-                updatedButtons[index].clicked = true;
-                return updatedButtons;
+            setClickedButtons(prev => {
+                const updated = [...prev];
+                updated[index] = { ...updated[index], clicked: true };
+                return updated;
             });
-            setSelectedLetters(prevLetters => [...prevLetters, clickedLetter]);
+            setSelectedLetters(prev => [...prev, clickedButtons[index].letter]);
         }
     };
-
 
     const handleSubmit = () => {
         const userAnswer = selectedLetters.join('');
         setSubmittedAnswer(userAnswer);
-        const isCorrect = userAnswer.toUpperCase() === riddle.answer.toUpperCase();
-        setIsCorrect(isCorrect);
-        if (isCorrect) {
-            if (audioCorrectRef.current) {
-                audioCorrectRef.current.currentTime = 0; // Reset to start
-                audioCorrectRef.current.play().catch(e => console.log("Audio play failed:", e));
-            }
-            setSolvedCount(prevCount => prevCount + 1);
-            setIncorrectAttempts(0);  // Reset incorrect attempts on correct answer
+        const correct = userAnswer.toUpperCase() === riddle.answer.toUpperCase();
+        setIsCorrect(correct);
+        if (correct) {
+            playSound(audioCorrectRef);
+            setSolvedCount(prev => prev + 1);
+            setIncorrectAttempts(0);
+            setCelebrate(true);
+            clearTimeout(celebrateTimerRef.current);
+            celebrateTimerRef.current = setTimeout(() => setCelebrate(false), 600);
         } else {
-            setIncorrectAttempts(prevAttempts => prevAttempts + 1);  // Increment incorrect attempts
+            setIncorrectAttempts(prev => prev + 1);
         }
     };
 
     const resetSelection = () => {
-        setClickedButtons(prevButtons =>
-            prevButtons.map(button => ({ ...button, clicked: false }))
-        );
+        setClickedButtons(prev => prev.map(b => ({ ...b, clicked: false })));
         setSelectedLetters([]);
         setSubmittedAnswer('');
         setIsCorrect(false);
-        // Don't reset incorrectAttempts here, as we want to keep track across attempts
-    }
+    };
 
     const nextRiddle = () => {
-        if (audioNextRef.current) {
-            audioNextRef.current.currentTime = 0; // Reset to start
-            audioNextRef.current.play().catch(e => console.log("Audio play failed:", e));
-        }
+        playSound(audioNextRef);
         setFadeIn(false);
         startTransition(() => {
             setTimeout(() => {
-                const newRandomNumber = Math.floor(Math.random() * 694);
-                setRiddle(data[newRandomNumber]);
+                if (!isCorrect) setSkippedCount(prev => prev + 1);
+                setRiddle(data[Math.floor(Math.random() * data.length)]);
                 resetSelection();
+                setIncorrectAttempts(0);
                 setFadeIn(true);
-                setIncorrectAttempts(0);  // Reset incorrect attempts for new riddle
-                if (!isCorrect) {
-                    setSkippedCount(prevCount => prevCount + 1);  // Increment skipped count
-                }
             }, 300);
         });
-    }
+    };
+
+    // Keyboard controls: 1–0 select letters · Enter submit/try-again/next · R reset
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') return;
+            const numToIndex = { '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '0': 9 };
+            if (e.key in numToIndex) {
+                handleButtonClick(numToIndex[e.key]);
+            } else if (e.key === 'Enter') {
+                if (!submittedAnswer && selectedLetters.length > 0) handleSubmit();
+                else if (submittedAnswer && !isCorrect) resetSelection();
+                else if (isCorrect) nextRiddle();
+            } else if ((e.key === 'r' || e.key === 'R') && !submittedAnswer) {
+                resetSelection();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [submittedAnswer, isCorrect, selectedLetters, clickedButtons]);
 
     return (
-        <div className={`container ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-            <h1 style={{ color: titleColor }}>Hai-Clue</h1>
-            <div className="counters-solved">
-                <div>Solved: {solvedCount}</div>
+        <div className={`container ${fadeIn ? 'fade-in' : 'fade-out'} ${celebrate ? 'celebrate' : ''}`}>
+            <button
+                className="mute-btn"
+                onClick={() => setIsMuted(m => !m)}
+                aria-label={isMuted ? 'Unmute sound' : 'Mute sound'}
+            >
+                {isMuted ? '♪ off' : '♪ on'}
+            </button>
+
+            <h1>Hai-Clue</h1>
+
+            <div className="counters">
+                <span className="counter-badge solved">&#10003; {solvedCount} Solved</span>
+                <span className="counter-badge skipped">&#8631; {skippedCount} Skipped</span>
             </div>
-            <div className="counters-skipped">
-                <div>Skipped: {skippedCount}</div>
+
+            <h2>{addLineBreaks(riddle.riddle)}</h2>
+
+            <div className="your-selection">
+                <span className="selected-letters">{selectedLetters.join('')}</span>
             </div>
-            <h2 style={{ color: riddleColor }}>{addLineBreaks(riddle.riddle)}</h2>
-            <div className='your-selection'>
-                <span className='selected-letters'>{selectedLetters.join('')}</span>
-            </div>
-            <div className='Result'>
-                {submittedAnswer && <p>{isCorrect ? 'Correct!' : 'Incorrect! Try again.'}</p>}
+
+            <div className="result-area">
+                {submittedAnswer && (
+                    <p className={isCorrect ? 'result-correct' : 'result-incorrect'}>
+                        {isCorrect ? 'Correct!' : 'Incorrect! Try again.'}
+                    </p>
+                )}
                 {!isCorrect && incorrectAttempts > 2 && (
-                    <p>Hint: The answer has {riddle.answer.length} letters.</p>
+                    <div className="hint-callout">
+                        <p>Hint: The answer has {riddle.answer.length} letters</p>
+                    </div>
                 )}
             </div>
-            <div className='show-answer'>
-                {isCorrect && <p> Answer: {riddle.answer.toUpperCase()}</p>}
+
+            <div className="show-answer">
+                {isCorrect && <p>Answer: {riddle.answer.toUpperCase()}</p>}
             </div>
+
             <div className="letter-grid">
                 <div className="row">
-                    {clickedButtons.slice(0, 5).map((button, index) => (
+                    {clickedButtons.slice(0, 5).map((button, i) => (
                         <button
-                            key={index}
-                            onClick={() => handleButtonClick(index)}
-                            className={button.clicked ? 'selected' : ''}
+                            key={i}
+                            onClick={() => handleButtonClick(i)}
+                            className={`letter-btn${button.clicked ? ' selected' : ''}`}
+                            aria-label={`Letter ${button.letter}`}
+                            aria-pressed={button.clicked}
                         >
                             {button.letter}
                         </button>
                     ))}
                 </div>
                 <div className="row">
-                    {clickedButtons.slice(5, 10).map((button, index) => (
+                    {clickedButtons.slice(5, 10).map((button, i) => (
                         <button
-                            key={index + 5}
-                            onClick={() => handleButtonClick(index + 5)}
-                            className={button.clicked ? 'selected' : ''}
+                            key={i + 5}
+                            onClick={() => handleButtonClick(i + 5)}
+                            className={`letter-btn${button.clicked ? ' selected' : ''}`}
+                            aria-label={`Letter ${button.letter}`}
+                            aria-pressed={button.clicked}
                         >
                             {button.letter}
                         </button>
                     ))}
                 </div>
             </div>
+
             <div className="controls">
-                <button onClick={nextRiddle} disabled={isPending}>
-                    {isPending ? 'Loading...' : 'Next'}
+                <button
+                    onClick={nextRiddle}
+                    disabled={isPending}
+                    aria-label={isCorrect ? 'Next riddle' : 'Skip riddle'}
+                >
+                    {isPending ? 'Loading...' : isCorrect ? 'Next' : 'Skip'}
                 </button>
                 {!submittedAnswer && (
-                    <button onClick={resetSelection} disabled={!selectedLetters.length}>
+                    <button
+                        onClick={resetSelection}
+                        disabled={!selectedLetters.length}
+                        aria-label="Reset selection"
+                    >
                         Reset
                     </button>
                 )}
-                <button onClick={handleSubmit} disabled={submittedAnswer}>
+                <button
+                    onClick={handleSubmit}
+                    disabled={!!submittedAnswer || !selectedLetters.length}
+                    aria-label="Submit answer"
+                >
                     Submit
                 </button>
-                {!isCorrect && submittedAnswer && <button onClick={resetSelection}>Try Again</button>}
+                {!isCorrect && submittedAnswer && (
+                    <button onClick={resetSelection} aria-label="Try again">
+                        Try Again
+                    </button>
+                )}
             </div>
-            <h4>created by https://github.com/imrantan</h4>
+
+            <div className="keyboard-hint">
+                <p>Keys: 1–0 select letters &middot; Enter submit &middot; R reset</p>
+            </div>
+
+            <h4>
+                <a href="https://github.com/imrantan" target="_blank" rel="noopener noreferrer">
+                    created by imrantan
+                </a>
+            </h4>
         </div>
     );
-}
+};
 
 export default Game;

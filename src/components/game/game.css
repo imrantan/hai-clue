@@ -1,289 +1,335 @@
+/* ── Container ─────────────────────────────────────────── */
 .container {
   max-width: 640px;
-  margin: 50px auto 0;
-  background: #F5F1E8;
-  color: #654321;
+  margin: 40px auto;
+  padding: 28px 24px;
+  background: rgba(245, 241, 232, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: var(--color-brown);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  gap: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(245, 241, 232, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.1);
   position: relative;
-  animation: slideUp 1.8s ease;
+  animation: slideUp 1.2s ease;
+  transition: box-shadow 0.5s ease;
 }
 
-.container h1 {
-  color: var(--main-red);
-  font-size: 2rem; /* Reduced font size for smaller screens */
-  margin-bottom: 1rem;
+/* Tatami texture overlay – kept subtle so the glassmorphism reads clearly */
+.container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-lg);
+  background-image: url('../../assets/images/tatami.jpg');
+  background-size: 300px;
+  opacity: 0.08;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Lift all direct children above the tatami pseudo-element */
+.container > * {
   position: relative;
-  z-index: 2;
+  z-index: 1;
+}
+
+/* ── Riddle-change fade transition ─────────────────────── */
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.4s ease-in, box-shadow 0.5s ease;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.3s ease-out, box-shadow 0.5s ease;
+}
+
+/* ── Correct-answer celebration glow ───────────────────── */
+.container.celebrate {
+  box-shadow:
+    0 8px 32px rgba(54, 92, 46, 0.4),
+    0 0 0 3px rgba(54, 92, 46, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Mute toggle ───────────────────────────────────────── */
+.mute-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 4px 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(54, 92, 46, 0.12);
+  color: var(--color-green);
+  border: 1px solid var(--color-green);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  z-index: 10;
+}
+
+.mute-btn:hover {
+  background: rgba(54, 92, 46, 0.25);
+}
+
+/* ── Title ─────────────────────────────────────────────── */
+.container h1 {
+  color: var(--color-green);
+  font-size: 2.4rem;
+  text-align: center;
+  letter-spacing: 0.05em;
   animation: fadeIn 1s ease;
 }
 
 @media (min-width: 768px) {
   .container h1 {
-    font-size: 3rem; /* Increase font size for larger screens */
+    font-size: 3rem;
   }
 }
 
-.container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: url('../../assets/images/tatami.jpg');
-  background-size: 300px;
-  opacity: 0.2;
-  z-index: -1;
+/* ── Counter pills ─────────────────────────────────────── */
+.counters {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.container hr {
-  height: 2px;
-  border: none;
-  background: #654321;
+.counter-badge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
+.counter-badge.solved {
+  background: rgba(54, 92, 46, 0.12);
+  color: var(--color-green);
+  border: 1px solid var(--color-green);
+}
+
+.counter-badge.skipped {
+  background: rgba(146, 39, 36, 0.08);
+  color: var(--color-red);
+  border: 1px solid var(--color-red);
+}
+
+/* ── Riddle ────────────────────────────────────────────── */
 .container h2 {
   text-align: center;
-  margin-bottom: 10px; /* Reduce this value to decrease space */
-  font-size: 1.8rem; /* Reduced font size for smaller screens */
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #922724;
-}
-
-.container h4 {
-  font-size: 0.5rem; /* Reduced font size for smaller screens */
-  font-weight: 100;
-  color: #181818;
+  color: var(--color-red);
+  line-height: 1.65;
 }
 
 @media (min-width: 768px) {
   .container h2 {
-    font-size: 2rem; /* Increase font size for larger screens */
-  }
-  .container h4 {
-    font-size: 0.8rem; /* Increase font size for larger screens */
+    font-size: 1.8rem;
   }
 }
 
-.container button {
-  margin: auto;
-  width: 100px;
-  height: 65px;
-  background: #365C2E;
-  color: #F5F1E8;
-  font-size: 1.2rem; /* Reduced font size for smaller screens */
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+/* ── Selected letters ──────────────────────────────────── */
+.your-selection {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5em;
+  color: var(--color-red);
+  letter-spacing: 0.1em;
+  animation: fadeIn 0.4s ease;
 }
 
-@media (min-width: 768px) {
-  .container button {
-    font-size: 1.5rem; /* Increase font size for larger screens */
-  }
-}
-
-.container button:hover {
-  background-color: #922724;
-}
-
-.container .index {
-  margin: auto;
-  font-size: 1rem; /* Reduced font size for smaller screens */
-  color: #654321;
-}
-
-@media (min-width: 768px) {
-  .container .index {
-    font-size: 1.2rem; /* Increase font size for larger screens */
-  }
-}
-
-.container .letter-grid {
+/* ── Result & feedback ─────────────────────────────────── */
+.result-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: -10px;
+  gap: 8px;
+  min-height: 32px;
+  animation: fadeIn 0.4s ease;
 }
 
-.container .letter-grid .row {
+.result-correct {
+  color: var(--color-green);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.result-incorrect {
+  color: var(--color-red);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Hint callout */
+.hint-callout {
+  background: rgba(146, 39, 36, 0.07);
+  border-left: 3px solid var(--color-red);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  color: var(--color-red);
+  font-style: italic;
+  animation: fadeIn 0.4s ease;
+}
+
+/* ── Correct answer reveal ─────────────────────────────── */
+.show-answer {
   display: flex;
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
   justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-brown);
+  letter-spacing: 0.08em;
+  animation: fadeIn 0.4s ease;
 }
 
-.container .letter-grid button {
-  margin: 5px;
-  padding: 8px 10px;
-  font-size: 1rem; /* Reduced font size for smaller screens */
-  font-weight: bold; /* Make letters bold */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #365C2E;
-  color: #F5F1E8;
+/* ── Letter grid ───────────────────────────────────────── */
+.letter-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.letter-grid .row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.letter-btn {
+  width: 52px;
+  height: 52px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  background: var(--color-green);
+  color: var(--color-cream);
+  border: none;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.28), 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-@media (min-width: 768px) {
-  .container .letter-grid button {
-    font-size: 1.2rem; /* Increase font size for larger screens */
-  }
+.letter-btn:hover:not(.selected) {
+  background-color: #4a7a3e;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.22), 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-.container .letter-grid button:hover {
-  background-color: #922724;
+.letter-btn:active {
+  transform: scale(0.92) translateY(2px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
-.container .letter-grid button.selected {
-  background-color: #922724;
+.letter-btn.selected {
+  background-color: var(--color-red);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22), 0 2px 6px rgba(146, 39, 36, 0.3);
 }
 
+.letter-btn:focus-visible {
+  outline: 3px solid var(--color-brown);
+  outline-offset: 2px;
+}
+
+/* ── Control buttons ───────────────────────────────────── */
 .controls {
-  margin-top: 20px;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .controls button {
-  margin: 5px;
-  padding: 10px 20px;
-  font-size: 1rem; /* Reduced font size for smaller screens */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #365C2E;
-  color: #F5F1E8;
+  padding: 10px 22px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-cream);
+  background: var(--color-green);
+  border: none;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-@media (min-width: 768px) {
-  .controls button {
-    font-size: 1.2rem; /* Increase font size for larger screens */
-  }
+.controls button:hover:not(:disabled) {
+  background-color: var(--color-red);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2), 0 4px 10px rgba(0, 0, 0, 0.12);
 }
 
-.controls button:hover {
-  background-color: #922724;
+.controls button:active:not(:disabled) {
+  transform: translateY(1px) scale(0.97);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
 .controls button:disabled {
-  background-color: #ccc;
+  background: var(--color-gray);
   cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.65;
 }
 
-.container .your-selection {
-  height: 50px; /* Fixed height to prevent layout shift */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1.5em; /* Increased font size */
-  color: #922724;
-  animation: fadeIn 1s ease;
+.controls button:focus-visible {
+  outline: 3px solid var(--color-brown);
+  outline-offset: 2px;
 }
 
-.container .selected-letters {
-  font-size: 1.5em; /* Increased font size */
-  font-weight: bold;
+/* ── Keyboard shortcut hint ────────────────────────────── */
+.keyboard-hint {
+  text-align: center;
+  font-size: 0.62rem;
+  color: var(--color-brown);
+  opacity: 0.4;
+  letter-spacing: 0.03em;
 }
 
-.container .Result {
-  display: flex;
-  justify-content: center;
-  font-size: 1.2rem; /* Reduced font size for smaller screens */
-  color: #181818;
-  animation: fadeIn 1s ease;
+/* ── Footer ────────────────────────────────────────────── */
+.container h4 {
+  text-align: center;
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: var(--color-dark);
+  opacity: 0.45;
 }
 
-.container .show-answer {
-  display: flex;
-  justify-content: center;
-  font-size: 1.2rem; /* Reduced font size for smaller screens */
-  color: #654321;
-  animation: fadeIn 1s ease;
+.container h4 a {
+  color: inherit;
+  text-decoration: none;
 }
 
-@media (min-width: 768px) {
-  .container .your-selection {
-    font-size: 3rem; /* Increase font size for larger screens */
-  }
-  .container .your-selection {
-    font-size: 1.5rem; /* Increase font size for larger screens */
-  }
+.container h4 a:hover {
+  text-decoration: underline;
 }
 
+/* ── Animations ────────────────────────────────────────── */
 @keyframes slideUp {
-  0% {
+  from {
     opacity: 0;
-    transform: translateY(50px);
+    transform: translateY(40px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 @keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Add this new animation for the transition effect */
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
-}
-
-/* Apply the new animation to the riddle */
-.container h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #922724;
-}
-
-@media (min-width: 768px) {
-  .container h2 {
-    font-size: 1.7rem;
-  }
-}
-
-.fade-in {
-  opacity: 1;
-  transition: opacity 0.5s ease-in;
-}
-
-.fade-out {
-  opacity: 0;
-  transition: opacity 0.5s ease-out;
-}
-
-.counters-solved {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  text-align: right;
-  font-size: 2.5rem;
-}
-
-.counters-skipped {
-  position: absolute;
-  top: 70px;
-  right: 10px;
-  text-align: right;
-  font-size: 1rem;
-}
-
-.counters div {
-  margin-bottom: 5px;
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

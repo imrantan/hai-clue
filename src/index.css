@@ -1,3 +1,15 @@
+:root {
+  --color-cream: #F5F1E8;
+  --color-brown: #654321;
+  --color-red: #922724;
+  --color-green: #365C2E;
+  --color-gray: #ccc;
+  --color-dark: #181818;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,28 +18,27 @@
 
 body {
   min-height: 100vh;
-  background-image: linear-gradient(#F5F1E8, #654321);
-  font-family: 'poppins';
+  background-image: linear-gradient(var(--color-cream), var(--color-brown));
+  font-family: 'Poppins', sans-serif;
   position: relative;
 }
 
 body::before {
   content: '';
-  position: fixed; /* Change to fixed for better performance */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-image: var(--background-image);
-  background-repeat: repeat; /* Set background-repeat to repeat */
-  background-size: 200px; /* Adjust the size of the repeated image */
+  background-repeat: repeat;
+  background-size: 200px;
   opacity: 0.4;
   z-index: -1;
 }
 
 @media (max-width: 768px) {
-  /* Styles for smaller screens */
   body::before {
-    background-size: 150px; /* Reduce the background image size for smaller screens */
+    background-size: 150px;
   }
 }
