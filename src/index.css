@@ -19,7 +19,7 @@
 body {
   min-height: 100vh;
   background-image: linear-gradient(var(--color-cream), var(--color-brown));
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Jost', sans-serif;
   position: relative;
 }
 
