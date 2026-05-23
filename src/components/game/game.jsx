@@ -54,6 +54,8 @@ const Game = () => {
     const correctBufferRef = useRef(null);
     const nextBufferRef = useRef(null);
     const celebrateTimerRef = useRef(null);
+    // Tracks whether buffer loading has been kicked off (must happen after ctx creation)
+    const audioInitRef = useRef(false);
 
     function addLineBreaks(str) {
         return str.split('\n').map((line, i) => (
@@ -76,31 +78,35 @@ const Game = () => {
         setClickedButtons(allButtons);
     }, [riddle]);
 
-    // Decode audio files into AudioBuffers once on mount for instant playback
     useEffect(() => {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        audioCtxRef.current = ctx;
-
-        const loadBuffer = async (url, ref) => {
-            try {
-                const res = await fetch(url);
-                const raw = await res.arrayBuffer();
-                ref.current = await ctx.decodeAudioData(raw);
-            } catch { /* audio is optional */ }
-        };
-
-        loadBuffer(correctSoundUrl, correctBufferRef);
-        loadBuffer(nextSoundUrl, nextBufferRef);
-
         return () => {
-            ctx.close();
+            audioCtxRef.current?.close();
             clearTimeout(celebrateTimerRef.current);
         };
     }, []);
 
-    const warmUpAudio = () => {
-        if (audioCtxRef.current?.state === 'suspended') {
-            audioCtxRef.current.resume();
+    // Must be called inside a user gesture so iOS/Android unlock the AudioContext.
+    // Creates the context on first call, resumes if suspended, and kicks off buffer loading.
+    const ensureAudio = () => {
+        if (!audioCtxRef.current) {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtxRef.current = ctx;
+        }
+        const ctx = audioCtxRef.current;
+        if (ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+        }
+        if (!audioInitRef.current) {
+            audioInitRef.current = true;
+            const loadBuffer = async (url, ref) => {
+                try {
+                    const res = await fetch(url);
+                    const raw = await res.arrayBuffer();
+                    ref.current = await ctx.decodeAudioData(raw);
+                } catch { /* audio is optional */ }
+            };
+            loadBuffer(correctSoundUrl, correctBufferRef);
+            loadBuffer(nextSoundUrl, nextBufferRef);
         }
     };
 
@@ -169,7 +175,7 @@ const Game = () => {
     };
 
     const handleButtonClick = (index) => {
-        warmUpAudio();
+        ensureAudio();
         playClick();
         if (!submittedAnswer && !clickedButtons[index].clicked) {
             setClickedButtons(prev => {
@@ -196,6 +202,7 @@ const Game = () => {
     };
 
     const handleSubmit = () => {
+        ensureAudio();
         const userAnswer = selectedLetters.map(s => s.letter).join('');
         setSubmittedAnswer(userAnswer);
         const correct = userAnswer.toUpperCase() === riddle.answer.toUpperCase();
@@ -245,6 +252,7 @@ const Game = () => {
     };
 
     const nextRiddle = () => {
+        ensureAudio();
         playBuffer(nextBufferRef);
         setFadeIn(false);
         startTransition(() => {
