@@ -510,7 +510,7 @@ const Game = () => {
                     </button>
                     {!submittedAnswer && (
                         <button
-                            onClick={resetSelection}
+                            onClick={() => { ensureAudio(); playClick(); resetSelection(); }}
                             disabled={!selectedLetters.length}
                             aria-label="Reset selection"
                         >
@@ -535,7 +535,7 @@ const Game = () => {
                         Submit
                     </button>
                     {!isCorrect && submittedAnswer && (
-                        <button onClick={resetSelection} aria-label="Try again">
+                        <button onClick={() => { ensureAudio(); playClick(); resetSelection(); }} aria-label="Try again">
                             Try Again
                         </button>
                     )}
