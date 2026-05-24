@@ -57,6 +57,8 @@ const Game = () => {
     const celebrateTimerRef = useRef(null);
     // Tracks whether buffer loading has been kicked off (must happen after ctx creation)
     const audioInitRef = useRef(false);
+    // Tracks whether the iOS silent-buffer unlock has already been performed
+    const audioUnlockedRef = useRef(false);
     // Tracks whether the streak-end trophy was triggered by a skip (vs game over)
     const streakEndWasSkip = useRef(false);
 
@@ -82,99 +84,116 @@ const Game = () => {
     }, [riddle]);
 
     useEffect(() => {
+        // Fire on the very first touch/click — before any button handler runs.
+        // Creates the AudioContext and plays a 1-sample silent buffer, which is
+        // the standard trick to fully unlock Web Audio on iOS Safari.
+        const bootstrap = () => {
+            if (!audioCtxRef.current) {
+                audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const ctx = audioCtxRef.current;
+            if (!audioUnlockedRef.current) {
+                audioUnlockedRef.current = true;
+                const silentBuf = ctx.createBuffer(1, 1, ctx.sampleRate);
+                const silentSrc = ctx.createBufferSource();
+                silentSrc.buffer = silentBuf;
+                silentSrc.connect(ctx.destination);
+                silentSrc.start(0);
+                ctx.resume().catch(() => {});
+            }
+            if (!audioInitRef.current) {
+                audioInitRef.current = true;
+                [[correctSoundUrl, correctBufferRef], [nextSoundUrl, nextBufferRef]].forEach(([url, ref]) => {
+                    fetch(url)
+                        .then(r => r.arrayBuffer())
+                        .then(raw => ctx.decodeAudioData(raw))
+                        .then(decoded => { ref.current = decoded; })
+                        .catch(() => {});
+                });
+            }
+        };
+
+        document.addEventListener('touchstart', bootstrap, { once: true, passive: true });
+        document.addEventListener('mousedown', bootstrap, { once: true });
+
         return () => {
+            document.removeEventListener('touchstart', bootstrap);
+            document.removeEventListener('mousedown', bootstrap);
             audioCtxRef.current?.close();
             clearTimeout(celebrateTimerRef.current);
         };
     }, []);
 
-    // Must be called inside a user gesture so iOS/Android unlock the AudioContext.
-    // Creates the context on first call, resumes if suspended, and kicks off buffer loading.
+    // Called inside every user-gesture handler as a safety net in case the
+    // document-level bootstrap hasn't fired yet (e.g. first touch IS the button tap).
     const ensureAudio = () => {
         if (!audioCtxRef.current) {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            audioCtxRef.current = ctx;
+            audioCtxRef.current = new (window.AudioContext || window.webkitAudioContext)();
         }
         const ctx = audioCtxRef.current;
-        if (ctx.state === 'suspended') {
+        if (!audioUnlockedRef.current) {
+            audioUnlockedRef.current = true;
+            const silentBuf = ctx.createBuffer(1, 1, ctx.sampleRate);
+            const silentSrc = ctx.createBufferSource();
+            silentSrc.buffer = silentBuf;
+            silentSrc.connect(ctx.destination);
+            silentSrc.start(0);
+            ctx.resume().catch(() => {});
+        } else if (ctx.state === 'suspended') {
             ctx.resume().catch(() => {});
         }
         if (!audioInitRef.current) {
             audioInitRef.current = true;
-            const loadBuffer = async (url, ref) => {
-                try {
-                    const res = await fetch(url);
-                    const raw = await res.arrayBuffer();
-                    ref.current = await ctx.decodeAudioData(raw);
-                } catch { /* audio is optional */ }
-            };
-            loadBuffer(correctSoundUrl, correctBufferRef);
-            loadBuffer(nextSoundUrl, nextBufferRef);
+            [[correctSoundUrl, correctBufferRef], [nextSoundUrl, nextBufferRef]].forEach(([url, ref]) => {
+                fetch(url)
+                    .then(r => r.arrayBuffer())
+                    .then(raw => ctx.decodeAudioData(raw))
+                    .then(decoded => { ref.current = decoded; })
+                    .catch(() => {});
+            });
         }
     };
 
     const playBuffer = (ref) => {
         if (isMuted || !audioCtxRef.current || !ref.current) return;
-        const ctx = audioCtxRef.current;
-        const doPlay = () => {
-            const src = ctx.createBufferSource();
-            src.buffer = ref.current;
-            src.connect(ctx.destination);
-            src.start(0);
-        };
-        if (ctx.state === 'suspended') {
-            ctx.resume().then(doPlay).catch(() => {});
-        } else {
-            doPlay();
-        }
+        const src = audioCtxRef.current.createBufferSource();
+        src.buffer = ref.current;
+        src.connect(audioCtxRef.current.destination);
+        src.start(0);
     };
 
     // Subtle tick on letter selection
     const playClick = () => {
         if (isMuted || !audioCtxRef.current) return;
         const ctx = audioCtxRef.current;
-        const doClick = () => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(600, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.04);
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.04);
-        };
-        if (ctx.state === 'suspended') {
-            ctx.resume().then(doClick).catch(() => {});
-        } else {
-            doClick();
-        }
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.04);
     };
 
-    // Synthesised buzz for incorrect answers — no extra audio file needed
+    // Synthesised buzz for incorrect answers
     const playBuzz = () => {
         if (isMuted || !audioCtxRef.current) return;
         const ctx = audioCtxRef.current;
-        const doBuzz = () => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(220, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.25);
-            gain.gain.setValueAtTime(0.2, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.25);
-        };
-        if (ctx.state === 'suspended') {
-            ctx.resume().then(doBuzz).catch(() => {});
-        } else {
-            doBuzz();
-        }
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
     };
 
     const handleButtonClick = (index) => {
