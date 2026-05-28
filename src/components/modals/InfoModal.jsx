@@ -7,48 +7,47 @@ const InfoModal = ({ onClose }) => (
             <div className="info-title">How to Play</div>
             <ul className="info-list">
                 <li>
+                    <span className="info-icon">&#127800;</span>
+                    <span>
+                        Each day features <strong>5 haiku riddles</strong>. Every player worldwide gets the
+                        same puzzles. Come back tomorrow for a fresh set!
+                    </span>
+                </li>
+                <li>
                     <span className="info-icon">&#9830;</span>
                     <span>
-                        Each haiku describes a single word. Select letters from the
-                        grid to spell your answer, then hit <strong>Submit</strong>.
+                        Each haiku describes a single word. Select letters from the grid to
+                        spell your answer, then hit <strong>Submit</strong>.
                     </span>
                 </li>
                 <li>
                     <span className="info-icon">&#9829;</span>
                     <span>
-                        You have <strong>5 lives</strong>. Each wrong answer costs 1 life.
-                        Solve a riddle correctly to <strong>earn a life back</strong> (capped
-                        at 5). Lose all lives and it&apos;s Game Over.
+                        You have <strong>5 lives</strong> shared across all 5 haikus. Wrong answers cost
+                        1 life. Solving a haiku <strong>earns 1 life back</strong> (capped at 5).
+                    </span>
+                </li>
+                <li>
+                    <span className="info-icon">&#128148;</span>
+                    <span>
+                        Lose all your lives and the challenge ends early — you can still share
+                        your result with friends.
                     </span>
                 </li>
                 <li>
                     <span className="info-icon">&#128161;</span>
                     <span>
-                        After <strong>2 wrong attempts</strong> on the same riddle, a hint
+                        After <strong>2 wrong attempts</strong> on the same haiku, a hint
                         revealing the answer length will appear.
                     </span>
                 </li>
                 <li>
-                    <span className="info-icon">&#9733;</span>
+                    <span className="info-icon">&#128202;</span>
                     <span>
-                        Solve riddles back-to-back to build a <strong>streak</strong>.
-                        Wrong guesses don&apos;t break it — only skipping or Game Over does.
-                    </span>
-                </li>
-                <li>
-                    <span className="info-icon">&#8631;</span>
-                    <span>
-                        <strong>Skipping</strong> resets your streak and lives to zero.
-                        If your streak is above 10, you&apos;ll be offered a trophy to share
-                        before the reset.
-                    </span>
-                </li>
-                <li>
-                    <span className="info-icon">&#9650;</span>
-                    <span>
-                        Reach a streak of <strong>5</strong> for a shareable Badge.
-                        Hit <strong>10</strong> for a Trophy. Both re-unlock every time you
-                        reach those numbers.
+                        Your result is shown as an emoji grid — <strong>&#129001;</strong> solved first
+                        try, <strong>&#129000;</strong> solved with mistakes,{' '}
+                        <strong>&#129505;</strong> failed, <strong>&#11036;</strong> not reached.
+                        Share it with friends!
                     </span>
                 </li>
                 <li>

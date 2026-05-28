@@ -1,0 +1,157 @@
+/* ── Daily puzzle meta (number + haiku count) ──────────── */
+.daily-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: -8px;
+}
+
+.daily-puzzle-num {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-green);
+  text-transform: uppercase;
+}
+
+.daily-progress-label {
+  font-size: 0.78rem;
+  color: var(--color-brown);
+  opacity: 0.6;
+  letter-spacing: 0.04em;
+}
+
+/* ── Progress dots ──────────────────────────────────────── */
+.daily-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: -4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(101, 67, 33, 0.18);
+  border: 1.5px solid rgba(101, 67, 33, 0.3);
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.dot.done {
+  background: var(--color-green);
+  border-color: var(--color-green);
+}
+
+.dot.current {
+  background: var(--color-red);
+  border-color: var(--color-red);
+  transform: scale(1.25);
+}
+
+/* ── Results page ───────────────────────────────────────── */
+.daily-results-header {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-green);
+  letter-spacing: 0.02em;
+}
+
+.daily-results-number {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--color-brown);
+  text-align: center;
+  opacity: 0.65;
+  text-transform: uppercase;
+  margin-top: -8px;
+}
+
+.daily-results-grid {
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  text-align: center;
+}
+
+.daily-results-lives {
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-brown);
+}
+
+.daily-results-lives.lives-danger {
+  color: var(--color-red);
+}
+
+/* ── Share text box ─────────────────────────────────────── */
+.daily-share-box {
+  width: 100%;
+  background: rgba(54, 92, 46, 0.07);
+  border: 1.5px solid rgba(54, 92, 46, 0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.daily-share-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--color-brown);
+  white-space: pre-wrap;
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Copy button ────────────────────────────────────────── */
+.daily-copy-btn {
+  padding: 11px 32px;
+  background: var(--color-green);
+  color: var(--color-cream);
+  border: none;
+  border-radius: 14px;
+  font-family: 'Jost', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.22), 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.daily-copy-btn:hover {
+  background: var(--color-red);
+  transform: translateY(-2px);
+}
+
+.daily-copy-btn:active {
+  transform: translateY(1px) scale(0.97);
+}
+
+/* ── Countdown ──────────────────────────────────────────── */
+.daily-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.daily-countdown-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--color-brown);
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+
+.daily-countdown-time {
+  font-size: 1.3rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: var(--color-green);
+  letter-spacing: 0.04em;
+}

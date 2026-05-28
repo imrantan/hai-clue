@@ -1,10 +1,10 @@
 import React from 'react'
-import Game from './components/game/game'
+import DailyChallenge from './components/daily/DailyChallenge'
 
 const App = () => {
   return (
     <>
-      <Game/>
+      <DailyChallenge />
     </>
   )
 }
