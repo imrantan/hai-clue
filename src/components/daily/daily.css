@@ -113,6 +113,42 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+  cursor: default;
+}
+
+.haiku-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: rgba(50, 40, 28, 0.93);
+  color: #F5F1E8;
+  font-size: 0.8rem;
+  font-style: italic;
+  line-height: 1.65;
+  white-space: pre-line;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  z-index: 10;
+  min-width: 180px;
+  animation: tooltipFadeIn 0.15s ease;
+}
+
+/* Downward arrow */
+.haiku-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 18px;
+  border: 6px solid transparent;
+  border-top-color: rgba(50, 40, 28, 0.93);
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .daily-answer-emoji {

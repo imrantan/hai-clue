@@ -13,6 +13,10 @@ function getEmoji(result) {
 const DailyResults = ({ puzzleNumber, results, lives, completed, haikus, onInfoOpen }) => {
     const [countdown, setCountdown] = useState(getTimeUntilNextPuzzle);
     const [copied, setCopied] = useState(false);
+    const [tooltipIndex, setTooltipIndex] = useState(null);
+
+    // Last index the player actually attempted (last non-null result)
+    const revealUpTo = results.reduce((acc, r, i) => (r !== null ? i : acc), -1);
 
     useEffect(() => {
         const id = setInterval(() => setCountdown(getTimeUntilNextPuzzle()), 1000);
@@ -55,11 +59,21 @@ const DailyResults = ({ puzzleNumber, results, lives, completed, haikus, onInfoO
                 {livesLine}
             </div>
 
-            {!completed && haikus && (
+            {!completed && haikus && revealUpTo >= 0 && (
                 <div className="daily-answers">
                     <div className="daily-answers-label">Today's Answers</div>
-                    {haikus.map((h, i) => (
-                        <div key={h.id} className="daily-answer-row">
+                    {haikus.slice(0, revealUpTo + 1).map((h, i) => (
+                        <div
+                            key={h.id}
+                            className="daily-answer-row"
+                            onMouseEnter={() => setTooltipIndex(i)}
+                            onMouseLeave={() => setTooltipIndex(null)}
+                        >
+                            {tooltipIndex === i && (
+                                <div className="haiku-tooltip" role="tooltip">
+                                    {h.riddle}
+                                </div>
+                            )}
                             <span className="daily-answer-emoji">{getEmoji(results[i])}</span>
                             <span className="daily-answer-word">{h.answer.toUpperCase()}</span>
                         </div>
