@@ -163,6 +163,12 @@
   letter-spacing: 0.06em;
 }
 
+.daily-answer-word.hidden-answer {
+  color: var(--color-brown);
+  opacity: 0.35;
+  letter-spacing: 0.12em;
+}
+
 /* ── Share text box ─────────────────────────────────────── */
 .daily-share-box {
   width: 100%;

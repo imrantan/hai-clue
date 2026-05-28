@@ -59,25 +59,30 @@ const DailyResults = ({ puzzleNumber, results, lives, completed, haikus, onInfoO
                 {livesLine}
             </div>
 
-            {!completed && haikus && revealUpTo >= 0 && (
+            {!completed && haikus && (
                 <div className="daily-answers">
                     <div className="daily-answers-label">Today's Answers</div>
-                    {haikus.slice(0, revealUpTo + 1).map((h, i) => (
-                        <div
-                            key={h.id}
-                            className="daily-answer-row"
-                            onMouseEnter={() => setTooltipIndex(i)}
-                            onMouseLeave={() => setTooltipIndex(null)}
-                        >
-                            {tooltipIndex === i && (
-                                <div className="haiku-tooltip" role="tooltip">
-                                    {h.riddle}
-                                </div>
-                            )}
-                            <span className="daily-answer-emoji">{getEmoji(results[i])}</span>
-                            <span className="daily-answer-word">{h.answer.toUpperCase()}</span>
-                        </div>
-                    ))}
+                    {haikus.map((h, i) => {
+                        const revealed = i <= revealUpTo;
+                        return (
+                            <div
+                                key={h.id}
+                                className="daily-answer-row"
+                                onMouseEnter={() => setTooltipIndex(i)}
+                                onMouseLeave={() => setTooltipIndex(null)}
+                            >
+                                {tooltipIndex === i && (
+                                    <div className="haiku-tooltip" role="tooltip">
+                                        {h.riddle}
+                                    </div>
+                                )}
+                                <span className="daily-answer-emoji">{getEmoji(results[i])}</span>
+                                <span className={`daily-answer-word${revealed ? '' : ' hidden-answer'}`}>
+                                    {revealed ? h.answer.toUpperCase() : '????'}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>
             )}
 
