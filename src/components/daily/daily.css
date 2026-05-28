@@ -87,6 +87,46 @@
   color: var(--color-red);
 }
 
+/* ── Answer reveal (shown on failure) ──────────────────── */
+.daily-answers {
+  width: 100%;
+  background: rgba(146, 39, 36, 0.06);
+  border: 1.5px solid rgba(146, 39, 36, 0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.daily-answers-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-red);
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+.daily-answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.daily-answer-emoji {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.daily-answer-word {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-brown);
+  letter-spacing: 0.06em;
+}
+
 /* ── Share text box ─────────────────────────────────────── */
 .daily-share-box {
   width: 100%;

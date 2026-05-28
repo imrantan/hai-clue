@@ -10,7 +10,7 @@ function getEmoji(result) {
     return result.wrongCount === 0 ? '🟩' : '🟨';
 }
 
-const DailyResults = ({ puzzleNumber, results, lives, completed, onInfoOpen }) => {
+const DailyResults = ({ puzzleNumber, results, lives, completed, haikus, onInfoOpen }) => {
     const [countdown, setCountdown] = useState(getTimeUntilNextPuzzle);
     const [copied, setCopied] = useState(false);
 
@@ -54,6 +54,18 @@ const DailyResults = ({ puzzleNumber, results, lives, completed, onInfoOpen }) =
             <div className={`daily-results-lives${lives <= 1 && completed ? ' lives-danger' : ''}`}>
                 {livesLine}
             </div>
+
+            {!completed && haikus && (
+                <div className="daily-answers">
+                    <div className="daily-answers-label">Today's Answers</div>
+                    {haikus.map((h, i) => (
+                        <div key={h.id} className="daily-answer-row">
+                            <span className="daily-answer-emoji">{getEmoji(results[i])}</span>
+                            <span className="daily-answer-word">{h.answer.toUpperCase()}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             <div className="daily-share-box">
                 <pre className="daily-share-text">{shareText}</pre>

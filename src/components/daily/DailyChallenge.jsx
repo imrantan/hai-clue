@@ -201,6 +201,7 @@ const DailyChallenge = () => {
                     results={results}
                     lives={lives}
                     completed={challengeState === 'completed'}
+                    haikus={haikus}
                     onInfoOpen={() => setShowInfo(true)}
                 />
             </>
