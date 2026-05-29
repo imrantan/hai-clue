@@ -77,11 +77,20 @@ const DailyChallenge = () => {
             }
         };
 
+        // Re-resume on visibility restore (tab switch, phone call, iOS background)
+        const onVisible = () => {
+            if (audioCtxRef.current?.state === 'suspended') {
+                audioCtxRef.current.resume().catch(() => {});
+            }
+        };
+
         document.addEventListener('touchstart', bootstrap, { once: true, passive: true });
         document.addEventListener('mousedown', bootstrap, { once: true });
+        document.addEventListener('visibilitychange', onVisible);
         return () => {
             document.removeEventListener('touchstart', bootstrap);
             document.removeEventListener('mousedown', bootstrap);
+            document.removeEventListener('visibilitychange', onVisible);
             audioCtxRef.current?.close();
         };
     }, []);
@@ -115,16 +124,18 @@ const DailyChallenge = () => {
     };
 
     const playBuffer = (ref) => {
-        if (isMutedRef.current || !audioCtxRef.current || !ref.current) return;
-        const src = audioCtxRef.current.createBufferSource();
+        const ctx = audioCtxRef.current;
+        if (isMutedRef.current || !ctx || !ref.current) return;
+        if (ctx.state !== 'running') return;
+        const src = ctx.createBufferSource();
         src.buffer = ref.current;
-        src.connect(audioCtxRef.current.destination);
+        src.connect(ctx.destination);
         src.start(0);
     };
 
     const playClick = () => {
-        if (isMutedRef.current || !audioCtxRef.current) return;
         const ctx = audioCtxRef.current;
+        if (isMutedRef.current || !ctx || ctx.state !== 'running') return;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);
@@ -139,8 +150,8 @@ const DailyChallenge = () => {
     };
 
     const playBuzz = () => {
-        if (isMutedRef.current || !audioCtxRef.current) return;
         const ctx = audioCtxRef.current;
+        if (isMutedRef.current || !ctx || ctx.state !== 'running') return;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);
